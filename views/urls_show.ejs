@@ -10,12 +10,10 @@
       <th>Key</th>
       <th>Url</th>
     </tr>
-    <% for (key in urls) {%>
     <tr>
-      <td><a href="<%= host %>/<%= key %>"><%= host %>/<%= key %></a></td>
-      <td><a href="<%= urls[key] %>"><%= urls[key] %></a></td>
+      <td><a href="<%= host %>/<%= shortURL %>"><%= host %>/<%= shortURL %></a></td>
+      <td><a href="<%= longURL %>"><%= longURL %></a></td>
     </tr>
-    <%}%>
   </table>
 
   </ul>

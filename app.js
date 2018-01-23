@@ -15,8 +15,20 @@ app.get("/", (req, res) => {
   res.end("Hello!");
 });
 
+app.get("/urls/:id", (req, res) => {
+  let templateVars = {
+    shortURL: req.params.id,
+    longURL: urlDatabase[req.params.id],
+    host: req.headers.host
+  };
+  res.render("urls_show", templateVars);
+});
+
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase };
+  let templateVars = {
+    urls: urlDatabase,
+    host: req.headers.host
+  };
   res.render("urls_index", templateVars);
 });
 
