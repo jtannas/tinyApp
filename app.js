@@ -18,6 +18,10 @@ app.get("/", (req, res) => {
   res.end("Hello!");
 });
 
+app.get("/urls/new", (req, res) => {
+  res.render("urls_new");
+});
+
 app.get("/urls/:id", (req, res) => {
   let templateVars = { host: req.headers.host };
   templateVars.urls = {};
@@ -31,6 +35,11 @@ app.get("/urls", (req, res) => {
     host: req.headers.host
   };
   res.render("urls_show", templateVars);
+});
+
+app.post("/urls", (req, res) => {
+  console.log(req.body); // debug statement to see POST parameters
+  res.send("Ok"); // Respond with 'Ok' (we will replace this)
 });
 
 app.get("/urls.json", (req, res) => {
