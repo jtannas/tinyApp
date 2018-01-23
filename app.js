@@ -1,3 +1,5 @@
+"use strict";
+
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
@@ -9,9 +11,25 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const DEFAULT_PORT = 8080;
 const PORT = process.env.PORT || DEFAULT_PORT;
 
-var urlDatabase = {
+const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
+};
+
+/** Generate a random key for an object using URL safe characters */
+const generateKey = function generateRandomStringForPrimaryKey(obj = {}, len = 6) {
+
+  const getRandUrlSafeChar = function() {
+    const safeChars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_~';
+    const index = Math.floor(Math.random() * safeChars.length);
+    return safeChars[index];
+  };
+
+  let randKey = '';
+  do {
+    for (let i = 0; i < len; i++) { randKey += getRandUrlSafeChar(); }
+  } while (obj.hasOwnProperty(randKey));
+  return randKey;
 };
 
 app.get("/", (req, res) => {
