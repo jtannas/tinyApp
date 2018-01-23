@@ -16,11 +16,9 @@ app.get("/", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  let templateVars = {
-    shortURL: req.params.id,
-    longURL: urlDatabase[req.params.id],
-    host: req.headers.host
-  };
+  let templateVars = { host: req.headers.host };
+  templateVars.urls = {};
+  templateVars.urls[req.params.id] = urlDatabase[req.params.id];
   res.render("urls_show", templateVars);
 });
 
@@ -29,7 +27,7 @@ app.get("/urls", (req, res) => {
     urls: urlDatabase,
     host: req.headers.host
   };
-  res.render("urls_index", templateVars);
+  res.render("urls_show", templateVars);
 });
 
 app.get("/urls.json", (req, res) => {
