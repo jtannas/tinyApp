@@ -12,43 +12,22 @@
     <%- include ./partials/_header %>
   </header>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Short URL</th>
-        <th>Long URL</th>
-        <th>Change Long URL</th>
-        <th>Details</th>
-        <th>Delete</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% for (key in urls) {%>
-        <% const shortUrl = `../u/${key}` %>
-        <tr>
-          <td><a href="./urls/<%= key %>"><%= key %></a></td>
-          <td><a href="//<%= urls[key].longUrl %>"><%= urls[key].longUrl %></a></td>
-          <td>
-            <form method="POST" action="/urls/<%= key %>">
-              <label for="longUrl">New Long URL</label>
-              <input type="text" name="longUrl" value="<% urls[key].longUrl %>">
-              <input type="submit" value="Update">
-            </form>
-          </td>
-          <td>
-            <form method="GET" action="/urls/<%= key %>">
-              <input type="submit" value="Details">
-            </form>
-          </td>
-          <td>
-            <form method="POST" action="/urls/<%= key %>/delete">
-              <input type="submit" value="Delete">
-            </form>
-          </td>
-        </tr>
-      <%}%>
-    </tbody>
-  </table>
+  <% for (key in urls) {%>
+    <form>
+      <h2>Shortcut <a href="//<%= urls[key].longUrl %>"><%= key %></a></h2>
+      <ul>
+        <li>
+          <label for="longUrl">Full URL</label>
+          <input type="text" name="longUrl" value="<%= urls[key].longUrl %>" size="40">
+          <input type="submit" formmethod="POST" formaction="/urls/<%= key %>" value="Update">
+        </li>
+        <li>
+          <input type="submit" formmethod="POST" formaction="/urls/<%= key %>/delete" value="Delete">
+        </li>
+      </ul>
+    </form>
+    <hr>
+  <%}%>
 
 </body>
 </html>

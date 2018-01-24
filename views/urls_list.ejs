@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>TinyApp</title>
+</head>
+
+<body>
+
+  <header>
+    <%- include ./partials/_header %>
+  </header>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Short URL</th>
+        <th>Long URL</th>
+        <th>Details</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% for (key in urls) {%>
+        <% const shortUrl = `../u/${key}` %>
+        <tr>
+          <td><a href="./<%= key %>"><%= key %></a></td>
+          <td><a href="//<%= urls[key].longUrl %>"><%= urls[key].longUrl %></a></td>
+          <td>
+            <form>
+              <input type="submit" formmethod="GET" formaction="/urls/<%= key %>" value="Edit">
+              <input type="submit" formmethod="POST" formaction="/urls/<%= key %>/delete" value="Delete">
+            </form>
+          </td>
+        </tr>
+      <%}%>
+    </tbody>
+  </table>
+
+</body>
+</html>

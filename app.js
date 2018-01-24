@@ -33,7 +33,7 @@ app.get("/urls", (req, res) => {
     urls: db.urls.records,
     host: req.headers.host
   };
-  res.render("urls_show", templateVars);
+  res.render("urls_list", templateVars);
 });
 
 /** POST method to add a new short url -> long url pair */
@@ -62,7 +62,6 @@ app.get("/urls/:shortUrl", (req, res) => {
       },
       host: req.headers.host
     };
-    console.log(templateVars);
     res.render("urls_show", templateVars);
   } else {
     res.status(404).send('URL not found');
