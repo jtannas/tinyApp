@@ -2,6 +2,9 @@
   "name": "tinyApp",
   "version": "1.0.0",
   "description": "",
+  "directories": {
+    "test": "test"
+  },
   "main": "app.js",
   "scripts": {
     "test": "mocha --colors --reporter min",
