@@ -66,6 +66,12 @@ app.get("/urls/:shortUrl", (req, res) => {
   }
 });
 
+/** Deletes a given url pair specified by the short url */
+app.post("/urls/:shortUrl/delete", (req, res) => {
+  urlDatabase.deleteUrl(req.params.shortUrl);
+  res.redirect('/urls/');
+});
+
 /** Redirects directly from a short url to its matching long url */
 app.get("/u/:shortUrl", (req, res) => {
   const longUrl = urlDatabase.getLongUrl(req.params.shortUrl);

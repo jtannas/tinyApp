@@ -25,6 +25,11 @@
       <tr>
         <td><a href="<%= url %>"><%= url %></a></td>
         <td><a href="<%= urls[key] %>"><%= urls[key] %></a></td>
+        <td>
+          <form method="POST" action="/urls/<%= key %>/delete">
+            <input type="submit" value="Submit">
+          </form>
+        </td>
       </tr>
       <%}%>
     </tbody>

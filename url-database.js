@@ -57,5 +57,5 @@ exports.getUrlPairs = function getAllUrlPairs() {
 
 /** Function to delete a url pair from the database */
 exports.deleteUrl = function deleteUrlPairFromDatabase(shortUrl) {
-  del(urlDatabase[shortUrl]);
+  delete urlDatabase[shortUrl];
 };
