@@ -4,7 +4,8 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha --colors --reporter min",
+    "test:watch": "mocha --colors --watch --reporter min"
   },
   "keywords": [],
   "author": "",
@@ -15,6 +16,9 @@
     "express": "^4.16.2"
   },
   "devDependencies": {
-    "nodemon": "^1.14.11"
+    "chai": "^4.1.2",
+    "mocha": "^5.0.0",
+    "nodemon": "^1.14.11",
+    "rewire": "^3.0.2"
   }
 }
