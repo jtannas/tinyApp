@@ -17,14 +17,24 @@
       <tr>
         <th>Short URL</th>
         <th>Long URL</th>
+        <th>Change Long URL</th>
+        <th>Details</th>
+        <th>Delete</th>
       </tr>
     </thead>
     <tbody>
       <% for (key in urls) {%>
         <% const shortUrl = `../u/${key}` %>
         <tr>
-          <td><a href="./<%= key %>"><%= /key %></a></td>
+          <td><a href="./urls/<%= key %>"><%= key %></a></td>
           <td><a href="//<%= urls[key].longUrl %>"><%= urls[key].longUrl %></a></td>
+          <td>
+            <form method="POST" action="/urls/<%= key %>">
+              <label for="longUrl">New Long URL</label>
+              <input type="text" name="longUrl" value="<% urls[key].longUrl %>">
+              <input type="submit" value="Update">
+            </form>
+          </td>
           <td>
             <form method="GET" action="/urls/<%= key %>">
               <input type="submit" value="Details">

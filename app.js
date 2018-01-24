@@ -69,6 +69,17 @@ app.get("/urls/:shortUrl", (req, res) => {
   }
 });
 
+/** For updating an individual short url -> long url pair */
+app.post("/urls/:shortUrl", (req, res) => {
+  const urlRecord = db.urls.get(req.params.shortUrl);
+  if (urlRecord) {
+    db.urls.update(req.params.shortUrl, req.body);
+    res.redirect("/urls");
+  } else {
+    res.status(404).send('URL not found');
+  }
+});
+
 /** Deletes a given url pair specified by the short url */
 app.post("/urls/:shortUrl/delete", (req, res) => {
   db.urls.delete(req.params.shortUrl);
