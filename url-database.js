@@ -31,19 +31,19 @@ const urlDatabase = {
 };
 
 /** Function to add a URL to the database */
-exports.addLongUrl = function(longUrl) {
+exports.addLongUrl = function addNewUrlPairToDatabase(longUrl) {
   const newKey = generateKey(urlDatabase, 6);
   urlDatabase[newKey] = longUrl;
   return newKey;
 };
 
 /** Function to get a long url from its short url */
-exports.getLongUrl = function(shortUrl) {
+exports.getLongUrl = function getLongUrlMatchingShortUrl(shortUrl) {
   return urlDatabase[shortUrl];
 };
 
 /** Function to get a { <shortUrl>: <longUrl> } object */
-exports.getUrlPair = function(shortUrl) {
+exports.getUrlPair = function getUrlPairMatchingShortUrl(shortUrl) {
   const longUrl = urlDatabase[shortUrl];
   /* beautify preserve:start */
   return longUrl ? { [shortUrl]: longUrl } : undefined;
@@ -51,6 +51,11 @@ exports.getUrlPair = function(shortUrl) {
 };
 
 /** Function to get all { <shortUrl>: <longUrl> } pairs */
-exports.getUrlPairs = function() {
+exports.getUrlPairs = function getAllUrlPairs() {
   return urlDatabase;
+};
+
+/** Function to delete a url pair from the database */
+exports.deleteUrl = function deleteUrlPairFromDatabase(shortUrl) {
+  del(urlDatabase[shortUrl]);
 };
