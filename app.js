@@ -10,7 +10,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 
-const urlDatabase = require("./url-database");
+const db = require("./data-model");
 
 /** Init App */
 const app = express();
@@ -30,21 +30,21 @@ app.get("/", (req, res) => {
 /** For listing existing short url -> long url pairs */
 app.get("/urls", (req, res) => {
   const templateVars = {
-    urls: urlDatabase.getUrlPairs(),
+    urls: db.urls.records,
     host: req.headers.host
   };
   res.render("urls_show", templateVars);
 });
 
-/** POST mehthod to add a new short url -> long url pair */
+/** POST method to add a new short url -> long url pair */
 app.post("/urls", (req, res) => {
-  const newKey = urlDatabase.addLongUrl(req.body.longUrl);
+  const newKey = db.urls.create(req.body.longUrl);
   res.redirect('/urls/' + newKey);
 });
 
 /** API endpoint for getting a json object of all url pairs */
 app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase.getUrlPairs());
+  res.json(db.urls.records);
 });
 
 /** Displays a form for creating a new url pair */
@@ -54,12 +54,15 @@ app.get("/urls/new", (req, res) => {
 
 /** For viewing an individual short url -> long url pair */
 app.get("/urls/:shortUrl", (req, res) => {
-  const urlPair = urlDatabase.getUrlPair(req.params.shortUrl);
-  if (urlPair) {
+  const urlRecord = db.urls.get(req.params.shortUrl);
+  if (urlRecord) {
     const templateVars = {
-      urls: urlPair,
+      urls: {
+        [req.params.shortUrl]: urlRecord
+      },
       host: req.headers.host
     };
+    console.log(templateVars);
     res.render("urls_show", templateVars);
   } else {
     res.status(404).send('URL not found');
@@ -68,15 +71,15 @@ app.get("/urls/:shortUrl", (req, res) => {
 
 /** Deletes a given url pair specified by the short url */
 app.post("/urls/:shortUrl/delete", (req, res) => {
-  urlDatabase.deleteUrl(req.params.shortUrl);
+  db.urls.delete(req.params.shortUrl);
   res.redirect('/urls/');
 });
 
 /** Redirects directly from a short url to its matching long url */
 app.get("/u/:shortUrl", (req, res) => {
-  const longUrl = urlDatabase.getLongUrl(req.params.shortUrl);
-  if (longUrl) {
-    res.redirect(longUrl);
+  const urlRecord = db.urls.get(req.params.shortUrl);
+  if (urlRecord) {
+    res.redirect(urlRecord.longUrl);
   } else {
     res.status(404).send('URL not found');
   }

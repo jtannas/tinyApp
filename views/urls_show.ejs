@@ -21,16 +21,21 @@
     </thead>
     <tbody>
       <% for (key in urls) {%>
-      <% const url = `http://${host}/u/${key}` %>
-      <tr>
-        <td><a href="<%= url %>"><%= url %></a></td>
-        <td><a href="<%= urls[key] %>"><%= urls[key] %></a></td>
-        <td>
-          <form method="POST" action="/urls/<%= key %>/delete">
-            <input type="submit" value="Submit">
-          </form>
-        </td>
-      </tr>
+        <% const shortUrl = `../u/${key}` %>
+        <tr>
+          <td><a href="./<%= key %>"><%= /key %></a></td>
+          <td><a href="//<%= urls[key].longUrl %>"><%= urls[key].longUrl %></a></td>
+          <td>
+            <form method="GET" action="/urls/<%= key %>">
+              <input type="submit" value="Details">
+            </form>
+          </td>
+          <td>
+            <form method="POST" action="/urls/<%= key %>/delete">
+              <input type="submit" value="Delete">
+            </form>
+          </td>
+        </tr>
       <%}%>
     </tbody>
   </table>
