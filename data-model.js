@@ -15,12 +15,14 @@ const getRandomChar = function getCharFromListOfUrlSafeChars() {
   return URL_SAFE_CHARS[index];
 };
 
+const getRandomString = function getRandomStringOfUrlSafeChars(len = 6) {
+  return Array.from({ length: len }, () => getRandomChar()).join('');
+};
+
 /** Generate a random key for an object using URL safe characters */
 const generateKey = function generateRandomStringForPrimaryKey(obj = {}, len = 6) {
   let randKey = '';
-  do {
-    for (let i = 0; i < len; i++) { randKey += getRandomChar(); }
-  } while (obj.hasOwnProperty(randKey));
+  do { randKey = getRandomString(len); } while (obj.hasOwnProperty(randKey));
   return randKey;
 };
 
