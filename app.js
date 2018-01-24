@@ -40,6 +40,15 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
+app.get("/u/:shortURL", (req, res) => {
+  const longUrl = urlDatabase[req.params.shortURL];
+  if (longUrl) {
+    res.redirect(longUrl);
+  } else {
+    res.status(404).send('URL not found');
+  }
+});
+
 app.get("/urls/:id", (req, res) => {
   let templateVars = { host: req.headers.host };
   templateVars.urls = {};
