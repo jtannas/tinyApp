@@ -1,86 +1,77 @@
+/**
+ * Controller for the TinyApp
+ *
+ * TinyApp is a TinyURL clone made as part of the Lighthouse Labs web dev curriculum.
+ * Given a long url, it will give back a short url that redirects to the long url.
+ */
 "use strict";
 
+/** Dependencies */
 const express = require("express");
-const app = express();
 const bodyParser = require("body-parser");
 
+const urlDatabase = require("./url-database");
+
+/** Init App */
+const app = express();
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => console.log(`TinyApp listening on port ${PORT}!`));
 
 
-const DEFAULT_PORT = 8080;
-const PORT = process.env.PORT || DEFAULT_PORT;
+/** Routes */
 
-const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
-};
-
-/** Generate a random key for an object using URL safe characters */
-const generateKey = function generateRandomStringForPrimaryKey(obj = {}, len = 6) {
-
-  const getRandUrlSafeChar = function() {
-    const safeChars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_~';
-    const index = Math.floor(Math.random() * safeChars.length);
-    return safeChars[index];
-  };
-
-  let randKey = '';
-  do {
-    for (let i = 0; i < len; i++) { randKey += getRandUrlSafeChar(); }
-  } while (obj.hasOwnProperty(randKey));
-  return randKey;
-};
-
+/** Base Route */
 app.get("/", (req, res) => {
   res.end("Hello!");
 });
 
+/** For listing existing short url -> long url pairs */
+app.get("/urls", (req, res) => {
+  const templateVars = {
+    urls: urlDatabase.getUrlPairs(),
+    host: req.headers.host
+  };
+  res.render("urls_show", templateVars);
+});
+
+/** POST mehthod to add a new short url -> long url pair */
+app.post("/urls", (req, res) => {
+  const newKey = urlDatabase.addLongUrl(req.body.longUrl);
+  res.redirect('/urls/' + newKey);
+});
+
+/** API endpoint for getting a json object of all url pairs */
+app.get("/urls.json", (req, res) => {
+  res.json(urlDatabase.getUrlPairs());
+});
+
+/** Displays a form for creating a new url pair */
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
-app.get("/u/:shortURL", (req, res) => {
-  const longUrl = urlDatabase[req.params.shortURL];
-  if (longUrl) {
-    res.redirect(longUrl);
+/** For viewing an individual short url -> long url pair */
+app.get("/urls/:shortUrl", (req, res) => {
+  const urlPair = urlDatabase.getUrlPair(req.params.shortUrl);
+  if (urlPair) {
+    const templateVars = {
+      urls: urlPair,
+      host: req.headers.host
+    };
+    res.render("urls_show", templateVars);
   } else {
     res.status(404).send('URL not found');
   }
 });
 
-app.get("/urls/:id", (req, res) => {
-  const templateVars = {
-    urls: {
-      [req.params.id]: urlDatabase[req.params.id]
-    },
-    host: req.headers.host
-  };
-  res.render("urls_show", templateVars);
-});
-
-app.get("/urls", (req, res) => {
-  const templateVars = {
-    urls: urlDatabase,
-    host: req.headers.host
-  };
-  res.render("urls_show", templateVars);
-});
-
-app.post("/urls", (req, res) => {
-  const newKey = generateKey(urlDatabase, 6);
-  urlDatabase[newKey] = req.body.longUrl;
-  res.redirect('/urls/' + newKey);
-});
-
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
-});
-
-app.get("/hello", (req, res) => {
-  res.end("<html><body>Hello <b>World</b></body></html>\n");
-});
-
-app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
+/** Redirects directly from a short url to its matching long url */
+app.get("/u/:shortUrl", (req, res) => {
+  const longUrl = urlDatabase.getLongUrl(req.params.shortUrl);
+  if (longUrl) {
+    res.redirect(longUrl);
+  } else {
+    res.status(404).send('URL not found');
+  }
 });
