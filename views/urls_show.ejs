@@ -15,14 +15,15 @@
   <table>
     <thead>
       <tr>
-        <th>Key</th>
-        <th>Url</th>
+        <th>Short URL</th>
+        <th>Long URL</th>
       </tr>
     </thead>
     <tbody>
       <% for (key in urls) {%>
+      <% const url = `http://${host}/u/${key}` %>
       <tr>
-        <td><a href="http://<%= host %>/urls/<%= key %>">http://<%= host %>/urls/<%= key %></a></td>
+        <td><a href="<%= url %>"><%= url %></a></td>
         <td><a href="<%= urls[key] %>"><%= urls[key] %></a></td>
       </tr>
       <%}%>
