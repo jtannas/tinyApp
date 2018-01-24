@@ -20,7 +20,7 @@ const urlDatabase = {
 const generateKey = function generateRandomStringForPrimaryKey(obj = {}, len = 6) {
 
   const getRandUrlSafeChar = function() {
-    const safeChars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_~';
+    const safeChars = '0123456789abcdefghijklmnopqrstuvwxyz-_~';
     const index = Math.floor(Math.random() * safeChars.length);
     return safeChars[index];
   };
