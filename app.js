@@ -20,7 +20,7 @@ const urlDatabase = {
 const generateKey = function generateRandomStringForPrimaryKey(obj = {}, len = 6) {
 
   const getRandUrlSafeChar = function() {
-    const safeChars = '0123456789abcdefghijklmnopqrstuvwxyz-_~';
+    const safeChars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_~';
     const index = Math.floor(Math.random() * safeChars.length);
     return safeChars[index];
   };
@@ -68,8 +68,9 @@ app.get("/urls", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  console.log(req.body); // debug statement to see POST parameters
-  res.send("Ok"); // Respond with 'Ok' (we will replace this)
+  const newKey = generateKey(urlDatabase, 6);
+  urlDatabase[newKey] = req.body.longUrl;
+  res.redirect('/urls/' + newKey);
 });
 
 app.get("/urls.json", (req, res) => {
