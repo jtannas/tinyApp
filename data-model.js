@@ -47,9 +47,10 @@ const database = {
 /** Define the urls as a database table */
 exports.urls = {
   get records() { return objCopy(database.urls); },
-  create: function createNewUrlRecordInDatabaseFromLongUrl(longUrl) {
+  create: function createNewUrlRecordInDatabaseFromLongUrl(longUrl, properties) {
     const newKey = generateKey(database.urls, 6);
     database.urls[newKey] = { 'longUrl': longUrl };
+    Object.assign(database.urls[shortUrl], properties);
     return newKey;
   },
   get: function getUrlRecordFromUrlsTable(shortUrl) {

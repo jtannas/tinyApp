@@ -6,6 +6,7 @@ const app = rewire('../data-model.js');
 
 const assert = chai.assert;
 
+
 describe('Random URL Char Generator', function() {
   const getRandomChar = app.__get__('getRandomChar ');
   const URL_SAFE_CHARS = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_~';
@@ -50,8 +51,21 @@ describe('Random URL Char Generator', function() {
     }
   });
 });
+
+
 describe('Random URL Safe String Generator', function() {
   const getRandomString = app.__get__('getRandomString');
+  let revert;
+
+  beforeEach(function(done) {
+    revert = app.__set__('getRandomChar', () => 'a');
+    done();
+  });
+
+  afterEach(function(done) {
+    revert();
+    done();
+  });
 
   it('should exist', function() {
     assert.exists(getRandomString);
