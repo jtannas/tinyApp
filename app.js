@@ -33,20 +33,20 @@ app.get("/", (req, res) => {
 
 /** Login Route */
 app.post("/login", (req, res) => {
-  res.cookie('username', req.body['username']);
+  res.cookie('user_id', req.body.user_id);
   res.redirect('back');
 });
 
 /** Logout Route */
 app.post("/logout", (req, res) => {
-  res.clearCookie('username');
+  res.clearCookie('user_id');
   res.redirect('back');
 });
 
 /** Register Form Get */
 app.get("/register", (req, res) => {
   const templateVars = {
-    username: req.cookies.username
+    user: db.users.get(req.cookies.user_id)
   };
   res.render('register', templateVars);
 });
@@ -76,7 +76,7 @@ app.post("/register", (req, res) => {
     email: req.body.email.trim().toLowerCase(),
     password: req.body.password
   });
-  res.cookie('username', key);
+  res.cookie('user_id', key);
   res.redirect('/urls');
 });
 
@@ -84,7 +84,7 @@ app.post("/register", (req, res) => {
 app.get("/urls", (req, res) => {
   const templateVars = {
     urls: db.urls.records,
-    username: req.cookies.username
+    user: db.users.get(req.cookies.user_id)
   };
   res.render("urls_list", templateVars);
 });
@@ -98,7 +98,7 @@ app.post("/urls", (req, res) => {
 /** API endpoint for getting a json object of all url pairs */
 app.get("/urls.json", (req, res) => {
   const templateVars = {
-    username: req.cookies.username
+    user: db.users.get(req.cookies.user_id)
   };
   res.json(db.urls.records);
 });
@@ -119,7 +119,7 @@ app.get("/urls/:shortUrl", (req, res) => {
       urls: {
         [req.params.shortUrl]: urlRecord
       },
-      username: req.cookies.username
+      user: db.users.get(req.cookies.user_id)
     };
     res.render("urls_show", templateVars);
   } else {
