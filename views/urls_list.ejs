@@ -24,7 +24,7 @@
       <% for (key in urls) {%>
         <% const shortUrl = `../u/${key}` %>
         <tr>
-          <td><a href="./<%= key %>"><%= key %></a></td>
+          <td><a href="/urls/<%= key %>"><%= key %></a></td>
           <td><a href="//<%= urls[key].longUrl %>"><%= urls[key].longUrl %></a></td>
           <td>
             <form>
