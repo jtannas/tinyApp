@@ -40,7 +40,7 @@ app.post("/login", (req, res) => {
 app.get("/urls", (req, res) => {
   const templateVars = {
     urls: db.urls.records,
-    host: req.headers.host
+    username: req.cookies.username
   };
   res.render("urls_list", templateVars);
 });
@@ -53,11 +53,17 @@ app.post("/urls", (req, res) => {
 
 /** API endpoint for getting a json object of all url pairs */
 app.get("/urls.json", (req, res) => {
+  const templateVars = {
+    username: req.cookies.username
+  };
   res.json(db.urls.records);
 });
 
 /** Displays a form for creating a new url pair */
 app.get("/urls/new", (req, res) => {
+  const templateVars = {
+    username: req.cookies.username
+  };
   res.render("urls_new");
 });
 
@@ -69,7 +75,7 @@ app.get("/urls/:shortUrl", (req, res) => {
       urls: {
         [req.params.shortUrl]: urlRecord
       },
-      host: req.headers.host
+      username: req.cookies.username
     };
     res.render("urls_show", templateVars);
   } else {

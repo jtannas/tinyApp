@@ -1,6 +1,10 @@
 <h1>TinyApp</h1>
-<form method="POST" action="/login">
-  <label for="username"></label>
-  <input type="text" name="username">
-  <input type="Submit" value="login">
-</form>
+<% if (username) {%>
+  <p>Logged in as: <%= username %></p>
+<% } else {%>
+  <form method="POST" action="/login">
+    <label for="username"></label>
+    <input type="text" name="username">
+    <input type="Submit" value="login">
+  </form>
+<% } %>
