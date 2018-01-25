@@ -25,7 +25,7 @@
         <% const shortUrl = `../u/${key}` %>
         <tr>
           <td><a href="/urls/<%= key %>"><%= key %></a></td>
-          <td><a href="//<%= urls[key].longUrl %>"><%= urls[key].longUrl %></a></td>
+          <td><a href="<%= (urls[key].longUrl.startsWith('http') ? '' : '//' ) + urls[key].longUrl %>"><%= urls[key].longUrl %></a></td>
           <td>
             <form>
               <input type="submit" formmethod="GET" formaction="/urls/<%= key %>" value="Edit">
