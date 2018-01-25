@@ -9,6 +9,7 @@
 /** Dependencies */
 const express = require("express");
 const bodyParser = require("body-parser");
+const cookieParser = require('cookie-parser');
 
 const db = require("./data-model");
 
@@ -16,6 +17,8 @@ const db = require("./data-model");
 const app = express();
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
+
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => console.log(`TinyApp listening on port ${PORT}!`));
 
