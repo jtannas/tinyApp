@@ -135,3 +135,282 @@ describe('objCopy for making unlinked deep copies of an object', function() {
     assert.deepEqual(objCopy([1, 2, 3]), [1, 2, 3]);
   });
 });
+
+describe('dbTableMethods return object', function() {
+  const dbTableMethods = app.__get__('dbTableMethods');
+
+  it('should exist', () => {
+    assert.exists(dbTableMethods);
+  });
+
+  it('should be a function', () => {
+    assert.isFunction(dbTableMethods);
+  });
+
+  it('should return an object when passed an object', () => {
+    assert.isObject(dbTableMethods({}));
+  });
+
+  it('should return an object with a records property', () => {
+    assert.hasOwnProperty(dbTableMethods({}), 'records');
+  });
+
+  it('should return an object with a get property', () => {
+    assert.hasOwnProperty(dbTableMethods({}), 'get');
+  });
+
+  it('should return an object with a delete property', () => {
+    assert.hasOwnProperty(dbTableMethods({}), 'delete');
+  });
+
+  it('should return an object with an update property', () => {
+    assert.hasOwnProperty(dbTableMethods({}), 'records');
+  });
+});
+
+describe('dbTableMethods records getter', function() {
+
+  const dbTableMethods = app.__get__('dbTableMethods');
+  let testData;
+  let testDataMethods;
+
+  beforeEach(function(done) {
+    testData = {
+      key1: { oldkey: 'oldValue' },
+      key2: { nested: 'prop2' }
+    };
+    testDataMethods = dbTableMethods(testData);
+    done();
+  });
+
+  afterEach(function(done) {
+    testData = undefined;
+    testDataMethods = undefined;
+    done();
+  });
+
+  it('should exist', () => {
+    assert.exists(testDataMethods.records);
+  });
+
+  it('should be a getter', () => {
+    const descriptor = Object.getOwnPropertyDescriptor(testDataMethods, 'records');
+    assert.isFunction(descriptor.get);
+  });
+
+  it('should return an Object', () => {
+    assert.isObject(testDataMethods.records);
+  });
+
+  it('should returns all records and nothing more', () => {
+    assert.deepEqual(testData, testDataMethods.records);
+  });
+});
+
+describe('dbTableMethods create function', function() {
+
+  const dbTableMethods = app.__get__('dbTableMethods');
+  const objCopy = app.__get__('objCopy');
+  let testData;
+  let create;
+  let revert;
+  let copy;
+
+  beforeEach(function(done) {
+    testData = {
+      key1: { oldkey: 'oldValue' },
+      key2: { nested: 'prop2' }
+    };
+    copy = objCopy(testData);
+    create = dbTableMethods(testData).create;
+    revert = app.__set__('generateKey', () => 'newKey');
+    done();
+  });
+
+  afterEach(function(done) {
+    testData = undefined;
+    testDataMethods = undefined;
+    copy = undefined;
+    revert();
+    done();
+  });
+
+  it('should exist', () => {
+    assert.exists(create);
+  });
+
+  it('should be a function', () => {
+    assert.isFunction(create);
+  });
+
+  it('should return a string key', () => {
+    assert.isString(create({}));
+  });
+
+  it('should create a property', () => {
+    assert.hasOwnProperty(testData, 'newKey');
+  });
+
+  it('should set the property value to the given properties', () => {
+    create('successful');
+    assert.propertyVal(testData, 'newKey', 'successful');
+  });
+
+  it('should not affect the rest of the object', () => {
+    copy.newKey = 'successful';
+    create('successful');
+    assert.deepEqual(testData, copy);
+  });
+});
+
+describe('dbTableMethods get function', function() {
+
+  const dbTableMethods = app.__get__('dbTableMethods');
+  let testData;
+  let get;
+
+  beforeEach(function(done) {
+    testData = {
+      key1: { oldkey: 'oldValue' },
+      key2: { nested: 'prop2' }
+    };
+    get = dbTableMethods(testData).get;
+    done();
+  });
+
+  afterEach(function(done) {
+    testData = undefined;
+    get = undefined;
+    done();
+  });
+
+  it('should exist', () => {
+    assert.exists(get);
+  });
+
+  it('should be a function', () => {
+    assert.isFunction(get);
+  });
+
+  it('should return an Object when given a valid key', () => {
+    assert.isObject(get('key1'));
+  });
+
+  it('should not directly return the object when given a valid key', () => {
+    assert.notEqual(testData.key1, get('key1'));
+  });
+
+  it('should return an identical copy of the object when given a valid key', () => {
+    assert.deepEqual(testData.key1, get('key1'));
+  });
+
+  it('should return undefined when given a non-existent key', () => {
+    assert.isUndefined(get('invalid'));
+  });
+});
+
+describe('dbTableMethods delete function', function() {
+
+  const dbTableMethods = app.__get__('dbTableMethods');
+  const objCopy = app.__get__('objCopy');
+  let del;
+  let testData;
+
+  beforeEach(function(done) {
+    testData = {
+      key1: { oldkey: 'oldValue' },
+      key2: { nested: 'prop2' }
+    };
+    copy = objCopy(testData);
+    del = dbTableMethods(testData).delete;
+    done();
+  });
+
+  afterEach(function(done) {
+    testData = undefined;
+    copy = undefined;
+    del = undefined;
+    done();
+  });
+
+  it('should exist', () => {
+    assert.exists(del);
+  });
+
+  it('should be a function', () => assert.isFunction(del));
+
+  it('should return nothing', () => {
+    assert.isUndefined(del('key1'));
+  });
+
+  it('should delete a property if it exists', () => {
+    del('key1');
+    assert.notProperty(testData, 'key1');
+  });
+
+  it('should only delete the property that is given', () => {
+    delete copy.key1;
+    del('key1');
+    assert.deepEqual(copy, testData);
+  });
+
+  it('should have no effects if no properties are given', () => {
+    del(undefined);
+    assert.deepEqual(testData, copy);
+  });
+});
+
+
+describe('dbTableMethods update function', function() {
+
+  const dbTableMethods = app.__get__('dbTableMethods');
+  let update;
+  let testData;
+
+  beforeEach(function(done) {
+    testData = {
+      key1: { oldkey: 'oldValue' },
+      key2: { nested: 'prop2' }
+    };
+    update = dbTableMethods(testData).update;
+    done();
+  });
+
+  afterEach(function(done) {
+    testData = undefined;
+    update = undefined;
+    done();
+  });
+
+  it('should exist', () => {
+    assert.exists(update);
+  });
+
+  it('should be a function', () => assert.isFunction(update));
+
+  it('should return nothing', () => {
+    assert.isUndefined(update('key1', {}));
+  });
+
+  it('should create a property if none exists', () => {
+    update('key1', { newKey: 'newValue' });
+    assert.property(testData.key1, 'newKey');
+  });
+
+  it('should create a property and value if none exists', () => {
+    update('key1', { newKey: 'newValue' });
+    assert.propertyVal(testData.key1, 'newKey', 'newValue');
+  });
+
+  it('should update a property value if it already exists', () => {
+    update('key1', { oldKey: 'newValue' });
+    assert.propertyVal(testData.key1, 'oldKey', 'newValue');
+  });
+
+  it('should have no effects if no properties are given', () => {
+    const objCopy = app.__get__('objCopy');
+    const initialState = objCopy(testData);
+    update('key1', {});
+    assert.deepEqual(testData, initialState);
+  });
+});

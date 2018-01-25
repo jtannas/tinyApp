@@ -66,7 +66,7 @@ app.get("/urls", (req, res) => {
 
 /** POST method to add a new short url -> long url pair */
 app.post("/urls", (req, res) => {
-  const newKey = db.urls.create(req.body.longUrl);
+  const newKey = db.urls.create({ longUrl: req.body.longUrl });
   res.redirect('/urls/' + newKey);
 });
 
