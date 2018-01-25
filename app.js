@@ -36,9 +36,22 @@ app.post("/login", (req, res) => {
   res.redirect('back');
 });
 
-/** Login Route */
+/** Logout Route */
 app.post("/logout", (req, res) => {
   res.clearCookie('username');
+  res.redirect('back');
+});
+
+/** Register Form Get */
+app.get("/register", (req, res) => {
+  const templateVars = {
+    username: req.cookies.username
+  };
+  res.render('register', templateVars);
+});
+
+/** Register Form Post */
+app.post("/register", (req, res) => {
   res.redirect('back');
 });
 
