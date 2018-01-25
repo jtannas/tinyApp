@@ -79,12 +79,10 @@ exports.urls = dbTableMethods(database.urls);
 
 database.users = {
   "qwerty": {
-    username: "user1",
     email: "user@example.com",
     password: "purple-monkey-dinosaur"
   },
   "asdfgh": {
-    username: "user2",
     email: "user2@example.com",
     password: "dishwasher-funk"
   }
