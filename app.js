@@ -36,6 +36,12 @@ app.post("/login", (req, res) => {
   res.redirect('back');
 });
 
+/** Login Route */
+app.post("/logout", (req, res) => {
+  res.clearCookie('username');
+  res.redirect('back');
+});
+
 /** For listing existing short url -> long url pairs */
 app.get("/urls", (req, res) => {
   const templateVars = {
