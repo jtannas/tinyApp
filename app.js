@@ -52,7 +52,13 @@ app.get("/register", (req, res) => {
 
 /** Register Form Post */
 app.post("/register", (req, res) => {
-  res.redirect('back');
+
+  const key = db.users.create({
+    email: req.body.email,
+    password: req.body.password
+  });
+  res.cookie('username', key);
+  res.redirect('/urls');
 });
 
 /** For listing existing short url -> long url pairs */
