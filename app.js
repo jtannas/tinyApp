@@ -30,6 +30,12 @@ app.get("/", (req, res) => {
   res.end("Hello!");
 });
 
+/** Login Route */
+app.post("/login", (req, res) => {
+  res.cookie('username', req.body['username']);
+  res.redirect('back');
+});
+
 /** For listing existing short url -> long url pairs */
 app.get("/urls", (req, res) => {
   const templateVars = {
