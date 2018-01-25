@@ -32,21 +32,39 @@ app.get("/", (req, res) => {
 });
 
 /** Login Route */
+app.get("/login", (req, res) => {
+  res.render('login');
+});
 app.post("/login", (req, res) => {
-  res.cookie('user_id', req.body.user_id);
-  res.redirect('back');
+  const userRecords = db.users.records;
+  const userIds = Object.keys(userRecords);
+  let loginId;
+  userIds.some(id => {
+    if (userRecords[id].email === req.body.email.trim().toLowerCase()) {
+      loginId = id;
+      return true;
+    } else {
+      return false;
+    }
+  });
+  if (!loginId || userRecords[loginId].password !== req.body.password) {
+    res.status(403).send('Invalid email and/or password!');
+    return;
+  }
+  res.cookie('userId', loginId);
+  res.redirect('/');
 });
 
 /** Logout Route */
 app.post("/logout", (req, res) => {
-  res.clearCookie('user_id');
+  res.clearCookie('userId');
   res.redirect('back');
 });
 
 /** Register Form Get */
 app.get("/register", (req, res) => {
   const templateVars = {
-    user: db.users.get(req.cookies.user_id)
+    user: db.users.get(req.cookies.userId)
   };
   res.render('register', templateVars);
 });
@@ -76,7 +94,7 @@ app.post("/register", (req, res) => {
     email: req.body.email.trim().toLowerCase(),
     password: req.body.password
   });
-  res.cookie('user_id', key);
+  res.cookie('userId', key);
   res.redirect('/urls');
 });
 
@@ -84,7 +102,7 @@ app.post("/register", (req, res) => {
 app.get("/urls", (req, res) => {
   const templateVars = {
     urls: db.urls.records,
-    user: db.users.get(req.cookies.user_id)
+    user: db.users.get(req.cookies.userId)
   };
   res.render("urls_list", templateVars);
 });
@@ -98,7 +116,7 @@ app.post("/urls", (req, res) => {
 /** API endpoint for getting a json object of all url pairs */
 app.get("/urls.json", (req, res) => {
   const templateVars = {
-    user: db.users.get(req.cookies.user_id)
+    user: db.users.get(req.cookies.userId)
   };
   res.json(db.urls.records);
 });
@@ -106,9 +124,9 @@ app.get("/urls.json", (req, res) => {
 /** Displays a form for creating a new url pair */
 app.get("/urls/new", (req, res) => {
   const templateVars = {
-    username: req.cookies.username
+    user: db.users.get(req.cookies.userId)
   };
-  res.render("urls_new");
+  res.render("urls_new", templateVars);
 });
 
 /** For viewing an individual short url -> long url pair */
@@ -119,7 +137,7 @@ app.get("/urls/:shortUrl", (req, res) => {
       urls: {
         [req.params.shortUrl]: urlRecord
       },
-      user: db.users.get(req.cookies.user_id)
+      user: db.users.get(req.cookies.userId)
     };
     res.render("urls_show", templateVars);
   } else {
