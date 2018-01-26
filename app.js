@@ -88,10 +88,9 @@ const urlAuthCheckMixin = function checkIfTheUrlBelongsToTheUserThenRedirectIfNo
 
 /** Base Route */
 app.get("/", (req, res) => {
-  const templateVars = {
-    user: db.users.get(req.session.userId)
-  };
-  res.render('index', templateVars);
+  if (loginCheckMixin(req, res)) {
+    res.redirect('urls');
+  }
 });
 
 /** Login Get Route */
@@ -107,7 +106,7 @@ app.post("/login", (req, res) => {
     return;
   }
   req.session.userId = user[0];
-  res.redirect('/');
+  res.redirect('/urls');
 });
 
 /** Logout Route */
