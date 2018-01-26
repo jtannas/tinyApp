@@ -143,7 +143,7 @@ app.get("/urls/new", (req, res) => {
 /** For viewing an individual short url -> long url pair */
 app.get("/urls/:shortUrl", (req, res) => {
   const urlRecord = db.urls.get(req.params.shortUrl);
-  if (urlRecord) {
+  if (urlRecord && urlRecord.userId === req.cookies.userId) {
     const templateVars = {
       urls: {
         [req.params.shortUrl]: urlRecord
@@ -159,7 +159,7 @@ app.get("/urls/:shortUrl", (req, res) => {
 /** For updating an individual short url -> long url pair */
 app.post("/urls/:shortUrl", (req, res) => {
   const urlRecord = db.urls.get(req.params.shortUrl);
-  if (urlRecord) {
+  if (urlRecord && urlRecord.userId === req.cookies.userId) {
     db.urls.update(req.params.shortUrl, req.body);
     res.redirect("/urls");
   } else {
@@ -169,7 +169,10 @@ app.post("/urls/:shortUrl", (req, res) => {
 
 /** Deletes a given url pair specified by the short url */
 app.post("/urls/:shortUrl/delete", (req, res) => {
-  db.urls.delete(req.params.shortUrl);
+  const urlRecord = db.urls.get(req.params.shortUrl);
+  if (urlRecord && urlRecord.userId === req.cookies.userId) {
+    db.urls.delete(req.params.shortUrl);
+  }
   res.redirect('/urls/');
 });
 
