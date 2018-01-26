@@ -24,6 +24,18 @@ const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => console.log(`TinyApp listening on port ${PORT}!`));
 
 
+/** Helper Functions */
+const getUrlsForUser = function getAllUrlsRecordsForAGivenUserId(userId) {
+  const urlRecords = db.urls.records;
+  for (const key in urlRecords) {
+    if (urlRecords[key].userId !== userId) {
+      delete urlRecords[key];
+    }
+  }
+  return urlRecords;
+};
+
+
 /** Routes */
 
 /** Base Route */
@@ -101,7 +113,7 @@ app.post("/register", (req, res) => {
 /** For listing existing short url -> long url pairs */
 app.get("/urls", (req, res) => {
   const templateVars = {
-    urls: db.urls.records,
+    urls: getUrlsForUser(req.cookies.userId),
     user: db.users.get(req.cookies.userId)
   };
   res.render("urls_list", templateVars);
@@ -122,10 +134,7 @@ app.post("/urls", (req, res) => {
 
 /** API endpoint for getting a json object of all url pairs */
 app.get("/urls.json", (req, res) => {
-  const templateVars = {
-    user: db.users.get(req.cookies.userId)
-  };
-  res.json(db.urls.records);
+  res.json(getUrlsForUser(req.cookies.userId));
 });
 
 /** Displays a form for creating a new url pair */
