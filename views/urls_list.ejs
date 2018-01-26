@@ -62,7 +62,7 @@
           </td>
 
           <td>
-              <%= (new Set(urls[key].visitors)).size.toLocaleString() %>
+              <%= (new Set(urls[key].visitors.map(record => record.visitorId))).size.toLocaleString() %>
           </td>
 
           <td>

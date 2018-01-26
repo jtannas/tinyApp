@@ -118,7 +118,7 @@ app.post("/login", (req, res) => {
 
 /** Logout Route */
 app.post("/logout", (req, res) => {
-  req.session = null;
+  req.session.userId = null;
   res.redirect('back');
 });
 
@@ -237,10 +237,10 @@ app.get("/u/:shortUrl", (req, res) => {
   const urlRecord = db.urls.get(req.params.shortUrl);
   if (urlRecord) {
     const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-    const updatedVisitors = {
-      visitors: urlRecord.visitors.concat([ip])
-    };
-    db.urls.update(req.params.shortUrl, updatedVisitors);
+    const visitTime = Date.now();
+    req.session.visitorId = (req.session.visitorId || `${ip}_${visitTime}`);
+    urlRecord.visitors.push({ visitorId: req.session.visitorId, ip, visitTime });
+    db.urls.update(req.params.shortUrl, urlRecord);
     res.redirect((urlRecord.longUrl.startsWith('http') ? '' : '//') + urlRecord.longUrl);
   } else {
     res.status(404).send('URL not found');
