@@ -16,7 +16,7 @@ const bcrypt = require('bcrypt');
 const db = require("./data-model");
 
 /** Init App */
-const SALT_ROUNDS = 10;
+const BCRYPT_SALT_ROUNDS = 10;
 
 const app = express();
 app.use(express.static(__dirname + '/static'));
@@ -35,7 +35,7 @@ app.listen(PORT, () => console.log(`TinyApp listening on port ${PORT}!`));
 /** Helper Functions */
 const getUrlsForUser = function getAllUrlsRecordsForAGivenUserId(userId) {
   const urlRecords = db.urls.records;
-  for (const key in urlRecords) {
+  for (let key of Object.keys(urlRecords)) {
     if (urlRecords[key].userId !== userId) {
       delete urlRecords[key];
     }
@@ -43,6 +43,28 @@ const getUrlsForUser = function getAllUrlsRecordsForAGivenUserId(userId) {
   return urlRecords;
 };
 
+const cleanEmail = function getTrimmedLowercaseString(str) {
+  return str.trim().toLowerCase();
+};
+
+const getUserForEmail = function findTheUserObjectForAGivenEmail(email) {
+  if (!email) { return undefined; }
+  const cleanedEmail = cleanEmail(email);
+  const userRecords = db.users.records;
+  const userIds = Object.keys(userRecords);
+  let loginId;
+  for (let id of userIds) {
+    if (userRecords[id].email === cleanedEmail) {
+      return [id, userRecords[id]];
+    }
+  }
+  return undefined;
+};
+
+const isValidLogin = function checkIfTheUserSessionIsValid(req) {
+  const user = db.users.get(req.session.userId);
+  return (user !== undefined);
+};
 
 /** Routes */
 
@@ -54,27 +76,19 @@ app.get("/", (req, res) => {
   res.render('index', templateVars);
 });
 
-/** Login Route */
+/** Login Get Route */
 app.get("/login", (req, res) => {
   res.render('login');
 });
+
+/** Login Post Route */
 app.post("/login", (req, res) => {
-  const userRecords = db.users.records;
-  const userIds = Object.keys(userRecords);
-  let loginId;
-  userIds.some(id => {
-    if (userRecords[id].email === req.body.email.trim().toLowerCase()) {
-      loginId = id;
-      return true;
-    } else {
-      return false;
-    }
-  });
-  if (!loginId || !bcrypt.compareSync(req.body.password, userRecords[loginId].password)) {
+  const user = getUserForEmail(req.body.email);
+  if (!user || !bcrypt.compareSync(req.body.password, user[1].password)) {
     res.status(403).send('Invalid email and/or password!');
     return;
   }
-  req.session.userId = loginId;
+  req.session.userId = user[0];
   res.redirect('/');
 });
 
@@ -103,7 +117,7 @@ app.post("/register", (req, res) => {
     const userRecords = db.users.records;
     const userIds = Object.keys(userRecords);
     const userEmails = userIds.map(id => userRecords[id].email);
-    const newEmail = req.body.email.trim().toLowerCase();
+    const newEmail = cleanEmail(req.body.email);
     if (userEmails.includes(newEmail)) {
       error = 'That email is already in use';
     }
@@ -114,8 +128,8 @@ app.post("/register", (req, res) => {
   }
 
   const key = db.users.create({
-    email: req.body.email.trim().toLowerCase(),
-    password: bcrypt.hashSync(req.body.password, SALT_ROUNDS)
+    email: cleanEmail(req.body.email),
+    password: bcrypt.hashSync(req.body.password, BCRYPT_SALT_ROUNDS)
   });
   req.session.userId = key;
   res.redirect('/urls');
@@ -132,20 +146,23 @@ app.get("/urls", (req, res) => {
 
 /** POST method to add a new short url -> long url pair */
 app.post("/urls", (req, res) => {
-  if (!req.session.userId || !db.users.get(req.session.userId)) {
-    res.redirect('/login');
-  } else {
+  if (isValidLogin(req)) {
     const newKey = db.urls.create({
       longUrl: req.body.longUrl,
       userId: req.session.userId
     });
     res.redirect('/urls/' + newKey);
+  } else {
+    res.redirect('/login');
   }
 });
 
 /** API endpoint for getting a json object of all url pairs */
 app.get("/urls.json", (req, res) => {
-  res.json(getUrlsForUser(req.session.userId));
+  if (isValidLogin(req)) {
+    const userUrls = getUrlsForUser(req.session.userId);
+    res.status(200).json(userUrls);
+  }
 });
 
 /** Displays a form for creating a new url pair */
@@ -153,17 +170,17 @@ app.get("/urls/new", (req, res) => {
   const templateVars = {
     user: db.users.get(req.session.userId)
   };
-  if (!req.session.userId || !db.users.get(req.session.userId)) {
-    res.redirect('/login');
-  } else {
+  if (isValidLogin(req)) {
     res.render("urls_new", templateVars);
+  } else {
+    res.redirect('/login');
   }
 });
 
 /** For viewing an individual short url -> long url pair */
 app.get("/urls/:shortUrl", (req, res) => {
   const urlRecord = db.urls.get(req.params.shortUrl);
-  if (urlRecord && urlRecord.userId === req.session.userId) {
+  if (isValidLogin(req) && urlRecord && urlRecord.userId === req.session.userId) {
     const templateVars = {
       urls: {
         [req.params.shortUrl]: urlRecord
@@ -179,7 +196,7 @@ app.get("/urls/:shortUrl", (req, res) => {
 /** For updating an individual short url -> long url pair */
 app.post("/urls/:shortUrl", (req, res) => {
   const urlRecord = db.urls.get(req.params.shortUrl);
-  if (urlRecord && urlRecord.userId === req.session.userId) {
+  if (isValidLogin(req) && urlRecord && urlRecord.userId === req.session.userId) {
     db.urls.update(req.params.shortUrl, req.body);
     res.redirect("/urls");
   } else {
@@ -190,7 +207,7 @@ app.post("/urls/:shortUrl", (req, res) => {
 /** Deletes a given url pair specified by the short url */
 app.post("/urls/:shortUrl/delete", (req, res) => {
   const urlRecord = db.urls.get(req.params.shortUrl);
-  if (urlRecord && urlRecord.userId === req.session.userId) {
+  if (isValidLogin(req) && urlRecord && urlRecord.userId === req.session.userId) {
     db.urls.delete(req.params.shortUrl);
   }
   res.redirect('/urls/');
