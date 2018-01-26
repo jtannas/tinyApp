@@ -14,9 +14,7 @@
   </header>
 
   <% if (locals.user) {%>
-    <form action="/urls/new">
-      <button type="submit" class="btn btn-info">New Link</button>
-    </form>
+    <a class="btn btn-info" href="/urls/new">New Link</a>
   <% } else { %>
     <div class="card text-white bg-warning mb-3">
       <div class="card-header">Please Log In to Continue</div>
