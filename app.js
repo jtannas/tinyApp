@@ -64,7 +64,8 @@ const loginCheckMixin = function checkIfTheUserSessionIsValidThenRedirectIfNot(r
   if (user !== undefined) {
     return true;
   } else {
-    res.redirect('/login');
+    // Render login directly to prevent infinite loops, since the login page checks for a login
+    res.render('/login');
     return false;
   }
 };
@@ -96,7 +97,9 @@ app.get("/", (req, res) => {
 
 /** Login Get Route */
 app.get("/login", (req, res) => {
-  res.render('login');
+  if (loginCheckMixin(req, res)) {
+    res.redirect('urls');
+  }
 });
 
 /** Login Post Route */
