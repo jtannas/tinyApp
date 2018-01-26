@@ -17,7 +17,6 @@ const db = require("./data-model");
 
 /** Init App */
 const BCRYPT_SALT_ROUNDS = 10;
-
 const app = express();
 app.use(express.static(__dirname + '/static'));
 app.set('view engine', 'ejs');
@@ -27,7 +26,6 @@ app.use(cookieSession({
   keys: process.env.session_keys || ['development'],
   maxAge: 24 * 60 * 60 * 1000
 }));
-
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => console.log(`TinyApp listening on port ${PORT}!`));
 
@@ -52,7 +50,6 @@ const getUserForEmail = function findTheUserObjectForAGivenEmail(email) {
   const cleanedEmail = cleanEmail(email);
   const userRecords = db.users.records;
   const userIds = Object.keys(userRecords);
-  let loginId;
   for (let id of userIds) {
     if (userRecords[id].email === cleanedEmail) {
       return [id, userRecords[id]];
@@ -61,9 +58,30 @@ const getUserForEmail = function findTheUserObjectForAGivenEmail(email) {
   return undefined;
 };
 
-const isValidLogin = function checkIfTheUserSessionIsValid(req) {
+const loginCheckMixin = function checkIfTheUserSessionIsValidThenRedirectIfNot(req, res) {
   const user = db.users.get(req.session.userId);
-  return (user !== undefined);
+  if (user !== undefined) {
+    return true;
+  } else {
+    res.redirect('/login');
+    return false;
+  }
+};
+
+const urlAuthCheckMixin = function checkIfTheUrlBelongsToTheUserThenRedirectIfNot(req, res, shortUrl) {
+  if (!loginCheckMixin(req, res)) {
+    return false;
+  }
+  const urlRecord = db.urls.get(shortUrl);
+  if (!urlRecord) {
+    res.status(404).send('URL not found');
+    return false;
+  }
+  if (urlRecord.userId !== req.session.userId) {
+    res.status(403).send('You cannot manage urls that aren\'t yours');
+    return false;
+  }
+  return true;
 };
 
 /** Routes */
@@ -135,7 +153,7 @@ app.post("/register", (req, res) => {
   res.redirect('/urls');
 });
 
-/** For listing existing short url -> long url pairs */
+/** For listing existing url records for the user */
 app.get("/urls", (req, res) => {
   const templateVars = {
     urls: getUrlsForUser(req.session.userId),
@@ -144,22 +162,20 @@ app.get("/urls", (req, res) => {
   res.render("urls_list", templateVars);
 });
 
-/** POST method to add a new short url -> long url pair */
+/** POST method to add a new short url record */
 app.post("/urls", (req, res) => {
-  if (isValidLogin(req)) {
+  if (loginCheckMixin(req, res)) {
     const newKey = db.urls.create({
       longUrl: req.body.longUrl,
       userId: req.session.userId
     });
     res.redirect('/urls/' + newKey);
-  } else {
-    res.redirect('/login');
   }
 });
 
-/** API endpoint for getting a json object of all url pairs */
+/** API endpoint for getting a json object of all user-associated url records */
 app.get("/urls.json", (req, res) => {
-  if (isValidLogin(req)) {
+  if (loginCheckMixin(req, res)) {
     const userUrls = getUrlsForUser(req.session.userId);
     res.status(200).json(userUrls);
   }
@@ -167,50 +183,40 @@ app.get("/urls.json", (req, res) => {
 
 /** Displays a form for creating a new url pair */
 app.get("/urls/new", (req, res) => {
-  const templateVars = {
-    user: db.users.get(req.session.userId)
-  };
-  if (isValidLogin(req)) {
+  if (loginCheckMixin(req, res)) {
+    const templateVars = {
+      user: db.users.get(req.session.userId)
+    };
     res.render("urls_new", templateVars);
-  } else {
-    res.redirect('/login');
   }
 });
 
-/** For viewing an individual short url -> long url pair */
+/** For viewing an individual url record */
 app.get("/urls/:shortUrl", (req, res) => {
-  const urlRecord = db.urls.get(req.params.shortUrl);
-  if (isValidLogin(req) && urlRecord && urlRecord.userId === req.session.userId) {
+  if (urlAuthCheckMixin(req, res, req.params.shortUrl)) {
     const templateVars = {
       urls: {
-        [req.params.shortUrl]: urlRecord
+        [req.params.shortUrl]: db.urls.get(req.params.shortUrl)
       },
       user: db.users.get(req.session.userId)
     };
     res.render("urls_show", templateVars);
-  } else {
-    res.status(404).send('URL not found');
   }
 });
 
-/** For updating an individual short url -> long url pair */
+/** For updating an individual url record associated to a given user */
 app.post("/urls/:shortUrl", (req, res) => {
-  const urlRecord = db.urls.get(req.params.shortUrl);
-  if (isValidLogin(req) && urlRecord && urlRecord.userId === req.session.userId) {
+  if (urlAuthCheckMixin(req, res, req.params.shortUrl)) {
     db.urls.update(req.params.shortUrl, req.body);
     res.redirect("/urls");
-  } else {
-    res.status(404).send('URL not found');
   }
 });
 
 /** Deletes a given url pair specified by the short url */
 app.post("/urls/:shortUrl/delete", (req, res) => {
-  const urlRecord = db.urls.get(req.params.shortUrl);
-  if (isValidLogin(req) && urlRecord && urlRecord.userId === req.session.userId) {
+  if (urlAuthCheckMixin(req, res, req.params.shortUrl)) {
     db.urls.delete(req.params.shortUrl);
   }
-  res.redirect('/urls/');
 });
 
 /** Redirects directly from a short url to its matching long url */
