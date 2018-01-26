@@ -11,10 +11,13 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
 const validator = require('validator');
+const bcrypt = require('bcrypt');
 
 const db = require("./data-model");
 
 /** Init App */
+const SALT_ROUNDS = 10;
+
 const app = express();
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -59,7 +62,7 @@ app.post("/login", (req, res) => {
       return false;
     }
   });
-  if (!loginId || userRecords[loginId].password !== req.body.password) {
+  if (!loginId || !bcrypt.compareSync(req.body.password, userRecords[loginId].password)) {
     res.status(403).send('Invalid email and/or password!');
     return;
   }
@@ -104,7 +107,7 @@ app.post("/register", (req, res) => {
 
   const key = db.users.create({
     email: req.body.email.trim().toLowerCase(),
-    password: req.body.password
+    password: bcrypt.hashSync(req.body.password, SALT_ROUNDS)
   });
   res.cookie('userId', key);
   res.redirect('/urls');
