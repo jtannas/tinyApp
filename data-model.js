@@ -69,12 +69,14 @@ database.urls = {
   "b2xVn2": {
     longUrl: "http://www.lighthouselabs.ca",
     userId: "qwerty",
-    dateCreated: new Date(Date.now())
+    dateCreated: new Date(Date.now()),
+    visitors: []
   },
   "9sm5xK": {
     longUrl: "http://www.google.com",
     userId: "asdfgh",
-    dateCreated: new Date(Date.now())
+    dateCreated: new Date(Date.now()),
+    visitors: []
   }
 };
 

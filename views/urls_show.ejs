@@ -22,6 +22,10 @@
           <fieldset disabled="">
             <label for="dateCreated" class="control-label">Date Created</label>
             <input name= "dateCreated" class="form-control" type="text" value="<%= (new Date(urls[key].dateCreated)).toLocaleDateString() %>">
+            <label for="visits" class="control-label">Visits</label>
+            <input name= "visits" class="form-control" type="text" value="<%= urls[key].visitors.length.toLocaleString() %>">
+            <label for="visitors" class="control-label">Visitors</label>
+            <input name= "visitors" class="form-control" type="text" value="<%= (new Set(urls[key].visitors)).size.toLocaleString() %>">
           </fieldset>
         </div>
         <hr>

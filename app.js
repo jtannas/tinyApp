@@ -176,7 +176,8 @@ app.post("/urls", (req, res) => {
     const newKey = db.urls.create({
       longUrl: req.body.longUrl,
       userId: req.session.userId,
-      dateCreated: new Date(Date.now())
+      dateCreated: new Date(Date.now()),
+      visitors: []
     });
     res.redirect('/urls/' + newKey);
   }
@@ -232,6 +233,11 @@ app.post("/urls/:shortUrl/delete", (req, res) => {
 app.get("/u/:shortUrl", (req, res) => {
   const urlRecord = db.urls.get(req.params.shortUrl);
   if (urlRecord) {
+    const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    const updatedVisitors = {
+      visitors: urlRecord.visitors.concat([ip])
+    };
+    db.urls.update(req.params.shortUrl, updatedVisitors);
     res.redirect((urlRecord.longUrl.startsWith('http') ? '' : '//') + urlRecord.longUrl);
   } else {
     res.status(404).send('URL not found');

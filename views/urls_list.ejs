@@ -31,6 +31,8 @@
         <th>Short URL</th>
         <th>Long URL</th>
         <th>Date Created</th>
+        <th>Visits</th>
+        <th>Visitors</th>
         <th>Edit</th>
         <th>Delete</th>
       </tr>
@@ -51,7 +53,17 @@
             </a>
           </td>
 
-          <td><%= (new Date(urls[key].dateCreated)).toLocaleDateString() %></td>
+          <td>
+            <%= (new Date(urls[key].dateCreated)).toLocaleDateString() %>
+          </td>
+
+          <td>
+            <%= urls[key].visitors.length.toLocaleString() %>
+          </td>
+
+          <td>
+              <%= (new Set(urls[key].visitors)).size.toLocaleString() %>
+          </td>
 
           <td>
             <a class="btn btn-info" href="/urls/<%= key %>">
