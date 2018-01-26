@@ -48,7 +48,10 @@ const getUrlsForUser = function getAllUrlsRecordsForAGivenUserId(userId) {
 
 /** Base Route */
 app.get("/", (req, res) => {
-  res.end("Hello!");
+  const templateVars = {
+    user: db.users.get(req.session.userId)
+  };
+  res.render('index', templateVars);
 });
 
 /** Login Route */
@@ -197,7 +200,7 @@ app.post("/urls/:shortUrl/delete", (req, res) => {
 app.get("/u/:shortUrl", (req, res) => {
   const urlRecord = db.urls.get(req.params.shortUrl);
   if (urlRecord) {
-    res.redirect(urlRecord.longUrl);
+    res.redirect((urlRecord.longUrl.startsWith('http') ? '' : '//') + urlRecord.longUrl);
   } else {
     res.status(404).send('URL not found');
   }

@@ -15,18 +15,28 @@
 
   <% for (key in urls) {%>
     <form>
-      <h2>Shortcut <a href="<%= (urls[key].longUrl.startsWith('http') ? '' : '//' ) + urls[key].longUrl %>"><%= key %></a></h2>
-      <ul>
-        <li>
-          <label for="longUrl">Full URL</label>
-          <input type="text" name="longUrl" value="<%= urls[key].longUrl %>" size="40">
-          <input type="submit" formmethod="POST" formaction="/urls/<%= key %>" value="Update">
-        </li>
-        <li>
-          <input type="submit" formmethod="POST" formaction="/urls/<%= key %>/delete" value="Delete">
-        </li>
-      </ul>
+        <h2>
+          Shortcut <a href="<%= (urls[key].longUrl.startsWith('http') ? '' : '//' ) + urls[key].longUrl %>">tinyApp.ca/u/<%= key %></a>
+        </h2>
+        <div class="form-group">
+          <label for="longUrl">
+            Full URL
+          </label>
+          <input type="text" name="longUrl" value="<%= urls[key].longUrl %>" class="form-control" size="40">
+          <button class="btn btn-info" type="submit" formmethod="POST" formaction="/urls/<%= key %>">
+            Update
+          </button>
+        </div>
     </form>
+
+    <form action="/urls/<%= key %>/delete" method="POST">
+      <div class="form-group">
+        <button class="btn btn-danger" type="submit">
+          Delete
+        </button>
+      </div>
+    </form>
+
     <hr>
   <%}%>
 

@@ -1,11 +1,39 @@
-<h1>TinyApp</h1>
-<% if (locals.user) {%>
-  <form method="POST" action="/logout">
-    <label><%= user.email %></label>
-    <input type="Submit" value="logout">
-  </form>
-  <a class="button" href="/urls">My Urls</a>
-<% } else {%>
-  <a class="button" href="/login">Login</a>
-  <a class="button" href="/register">Register</a>
-<% } %>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+  <a class="navbar-brand" href="#">TinyApp</a>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarColor01">
+    <ul class="navbar-nav mr-auto">
+
+      <li class="nav-item">
+        <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+      </li>
+
+      <% if (locals.user) {%>
+        <li class="nav-item">
+          <a class="nav-link" href="/urls">My Urls</a>
+        </li>
+      <% } else {%>
+        <li  class="nav-item">
+          <a class="nav-link" href="/login">Login</a>
+        </li>
+        <li  class="nav-item">
+          <a class="nav-link" href="/register">Register</a>
+        </li>
+      <% } %>
+
+    </ul>
+
+    <% if (locals.user) {%>
+      <form method="POST" action="/logout" class="nav-item">
+        <label><%= user.email %></label>
+        <button class="btn btn-primary" type="Submit">Logout</button>
+      </form>
+    <% } %>
+
+  </div>
+</nav>
+

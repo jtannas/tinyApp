@@ -12,30 +12,65 @@
   <header>
     <%- include ./partials/_header %>
   </header>
-  <a href="/urls/new">New Link</a>
-  <table>
+
+  <% if (locals.user) {%>
+    <form action="/urls/new">
+      <button type="submit" class="btn btn-info">New Link</button>
+    </form>
+  <% } else { %>
+    <div class="card text-white bg-warning mb-3">
+      <div class="card-header">Please Log In to Continue</div>
+      <div class="card-body">
+        <p class="card-text">You must be logged in to create and manage shortened URLs. <a href="/login">Click Here To Log In</a></p>
+      </div>
+    </div>
+  <%}%>
+
+  <table class="table table-hover">
+
     <thead>
       <tr>
         <th>Short URL</th>
         <th>Long URL</th>
-        <th>Details</th>
+        <th>Edit</th>
+        <th>Delete</th>
       </tr>
     </thead>
+
     <tbody>
+
       <% for (key in urls) {%>
-        <% const shortUrl = `../u/${key}` %>
         <tr>
-          <td><a href="/urls/<%= key %>"><%= key %></a></td>
-          <td><a href="<%= (urls[key].longUrl.startsWith('http') ? '' : '//' ) + urls[key].longUrl %>"><%= urls[key].longUrl %></a></td>
+
           <td>
-            <form>
-              <input type="submit" formmethod="GET" formaction="/urls/<%= key %>" value="Edit">
-              <input type="submit" formmethod="POST" formaction="/urls/<%= key %>/delete" value="Delete">
+            <a href="u/<%= key %>">tinyApp.ca/u/<%= key %></a>
+          </td>
+
+          <td>
+            <a href="<%= (urls[key].longUrl.startsWith('http') ? '' : '//' ) + urls[key].longUrl %>">
+              <%= urls[key].longUrl %>
+            </a>
+          </td>
+
+          <td>
+            <a class="btn btn-info" href="/urls/<%= key %>">
+              Edit
+            </a>
+          </td>
+
+          <td>
+            <form action="/urls/<%= key %>/delete" method="POST">
+                <button class="btn btn-danger" type="submit">
+                  Delete
+                </button>
             </form>
           </td>
+
         </tr>
       <%}%>
+
     </tbody>
+
   </table>
 
 </body>

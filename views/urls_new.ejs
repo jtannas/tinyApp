@@ -1,18 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>TinyApp - New URL</title>
   <link rel="stylesheet" href="/bootstrap.min.css">
 </head>
 
-<body style="font-size:20px; padding:50px;">
+<body>
+
   <% include ./partials/_header %>
-  <form action="/urls" method="POST" style="margin:150px;">
-    <label for="longUrl">Enter a URL:</label>
-    <input id="longUrl" type="text" name="longUrl" placeholder="http://" style="width: 300px">
-    <input type="submit" value="Submit">
+
+  <form action="/urls" method="POST">
+      <label for="longUrl">Enter a URL:</label>
+      <input class="form-control" id="longUrl" type="text" name="longUrl" placeholder="http://">
+      <button class="btn btn-info" type="submit">Submit new url</button>
   </form>
+
 </body>
 
 </html>
