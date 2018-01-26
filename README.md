@@ -26,5 +26,6 @@ Node Depencies (available through `npm`):
 "cookie-session": "^2.0.0-beta.3",
 "ejs": "^2.5.7",
 "express": "^4.16.2",
+"method-override": "^2.3.10",
 "validator": "^9.2.0"
 ```
