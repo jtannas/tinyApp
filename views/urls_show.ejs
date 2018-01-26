@@ -15,9 +15,11 @@
 
   <% for (key in urls) {%>
     <form>
+
         <h2>
           Shortcut <a href="<%= (urls[key].longUrl.startsWith('http') ? '' : '//' ) + urls[key].longUrl %>">tinyApp.ca/u/<%= key %></a>
         </h2>
+
         <div class="form-group">
           <fieldset disabled="">
             <label for="dateCreated" class="control-label">Date Created</label>
@@ -28,7 +30,9 @@
             <input name= "visitors" class="form-control" type="text" value="<%= (new Set(urls[key].visitors)).size.toLocaleString() %>">
           </fieldset>
         </div>
+
         <hr>
+
         <div class="form-group">
           <label for="longUrl">
             Full URL
@@ -38,6 +42,7 @@
             Update
           </button>
         </div>
+
     </form>
 
     <form action="/urls/<%= key %>/delete" method="POST">
