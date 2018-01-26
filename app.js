@@ -109,8 +109,15 @@ app.get("/urls", (req, res) => {
 
 /** POST method to add a new short url -> long url pair */
 app.post("/urls", (req, res) => {
-  const newKey = db.urls.create({ longUrl: req.body.longUrl });
-  res.redirect('/urls/' + newKey);
+  if (!req.cookies.userId || !db.users.get(req.cookies.userId)) {
+    res.redirect('/login');
+  } else {
+    const newKey = db.urls.create({
+      longUrl: req.body.longUrl,
+      userId: req.cookies.userId
+    });
+    res.redirect('/urls/' + newKey);
+  }
 });
 
 /** API endpoint for getting a json object of all url pairs */
@@ -126,7 +133,11 @@ app.get("/urls/new", (req, res) => {
   const templateVars = {
     user: db.users.get(req.cookies.userId)
   };
-  res.render("urls_new", templateVars);
+  if (!req.cookies.userId || !db.users.get(req.cookies.userId)) {
+    res.redirect('/login');
+  } else {
+    res.render("urls_new", templateVars);
+  }
 });
 
 /** For viewing an individual short url -> long url pair */

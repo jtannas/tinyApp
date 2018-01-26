@@ -67,10 +67,12 @@ const dbTableMethods = function returnASetOfMethodsForATable(tableObject, keyLen
 /** The key-value store 'database' of urls and other info */
 database.urls = {
   "b2xVn2": {
-    longUrl: "http://www.lighthouselabs.ca"
+    longUrl: "http://www.lighthouselabs.ca",
+    userId: "qwerty"
   },
   "9sm5xK": {
-    longUrl: "http://www.google.com"
+    longUrl: "http://www.google.com",
+    userId: "asdfgh"
   }
 };
 
