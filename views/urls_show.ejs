@@ -38,14 +38,14 @@
             Full URL
           </label>
           <input type="text" name="longUrl" value="<%= urls[key].longUrl %>" class="form-control" size="40">
-          <button class="btn btn-info" type="submit" formmethod="POST" formaction="/urls/<%= key %>">
+          <button class="btn btn-info" type="submit" formmethod="POST" formaction="/urls/<%= key %>?_method=PATCH">
             Update
           </button>
         </div>
 
     </form>
 
-    <form action="/urls/<%= key %>/delete" method="POST">
+    <form action="/urls/<%= key %>/?_method=DELETE" method="POST">
       <div class="form-group">
         <button class="btn btn-danger" type="submit">
           Delete

@@ -12,6 +12,7 @@ const bodyParser = require("body-parser");
 const cookieSession = require('cookie-session');
 const validator = require('validator');
 const bcrypt = require('bcrypt');
+const methodOverride = require('method-override');
 // const moment = require('moment');
 
 const db = require("./data-model");
@@ -22,6 +23,7 @@ const app = express();
 app.use(express.static(__dirname + '/static'));
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(methodOverride('_method'));
 app.use(cookieSession({
   name: 'session',
   keys: process.env.session_keys || ['development'],
@@ -215,17 +217,18 @@ app.get("/urls/:shortUrl", (req, res) => {
 });
 
 /** For updating an individual url record associated to a given user */
-app.post("/urls/:shortUrl", (req, res) => {
+app.patch("/urls/:shortUrl", (req, res) => {
   if (urlAuthCheckMixin(req, res, req.params.shortUrl)) {
-    db.urls.update(req.params.shortUrl, req.body);
+    db.urls.update(req.params.shortUrl, { longUrl: req.body.longUrl });
     res.redirect("/urls");
   }
 });
 
 /** Deletes a given url pair specified by the short url */
-app.post("/urls/:shortUrl/delete", (req, res) => {
+app.delete("/urls/:shortUrl", (req, res) => {
   if (urlAuthCheckMixin(req, res, req.params.shortUrl)) {
     db.urls.delete(req.params.shortUrl);
+    res.redirect("/urls");
   }
 });
 
