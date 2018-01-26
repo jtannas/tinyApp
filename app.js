@@ -12,6 +12,7 @@ const bodyParser = require("body-parser");
 const cookieSession = require('cookie-session');
 const validator = require('validator');
 const bcrypt = require('bcrypt');
+// const moment = require('moment');
 
 const db = require("./data-model");
 
@@ -166,7 +167,8 @@ app.post("/urls", (req, res) => {
   if (loginCheckMixin(req, res)) {
     const newKey = db.urls.create({
       longUrl: req.body.longUrl,
-      userId: req.session.userId
+      userId: req.session.userId,
+      dateCreated: new Date(Date.now())
     });
     res.redirect('/urls/' + newKey);
   }

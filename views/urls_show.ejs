@@ -19,6 +19,13 @@
           Shortcut <a href="<%= (urls[key].longUrl.startsWith('http') ? '' : '//' ) + urls[key].longUrl %>">tinyApp.ca/u/<%= key %></a>
         </h2>
         <div class="form-group">
+          <fieldset disabled="">
+            <label for="dateCreated" class="control-label">Date Created</label>
+            <input name= "dateCreated" class="form-control" type="text" value="<%= (new Date(urls[key].dateCreated)).toLocaleDateString() %>">
+          </fieldset>
+        </div>
+        <hr>
+        <div class="form-group">
           <label for="longUrl">
             Full URL
           </label>

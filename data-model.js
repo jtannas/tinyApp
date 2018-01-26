@@ -68,11 +68,13 @@ const dbTableMethods = function returnASetOfMethodsForATable(tableObject, keyLen
 database.urls = {
   "b2xVn2": {
     longUrl: "http://www.lighthouselabs.ca",
-    userId: "qwerty"
+    userId: "qwerty",
+    dateCreated: new Date(Date.now())
   },
   "9sm5xK": {
     longUrl: "http://www.google.com",
-    userId: "asdfgh"
+    userId: "asdfgh",
+    dateCreated: new Date(Date.now())
   }
 };
 
