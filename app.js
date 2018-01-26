@@ -138,7 +138,7 @@ app.post("/register", (req, res) => {
   if (!validator.isEmail(req.body.email)) {
     error = 'Please provide a valid email address';
   } else if (!req.body.password || req.body.password.length < 6) {
-    error = 'Please provide password 6 characters or longer';
+    error = 'Please provide a password that is 6 characters or longer';
   } else {
     const userRecords = db.users.records;
     const userIds = Object.keys(userRecords);
