@@ -59,13 +59,12 @@ const getUserForEmail = function findTheUserObjectForAGivenEmail(email) {
   return undefined;
 };
 
-const loginCheckMixin = function checkIfTheUserSessionIsValidThenRedirectIfNot(req, res) {
+const loginCheckMixin = function checkIfTheUserSessionIsValidThenRedirectIfNot(req, res, goTo = true) {
   const user = db.users.get(req.session.userId);
   if (user !== undefined) {
     return true;
   } else {
-    // Render login directly to prevent infinite loops, since the login page checks for a login
-    res.render('/login');
+    if (goTo) { res.redirect('/login'); }
     return false;
   }
 };
@@ -97,8 +96,10 @@ app.get("/", (req, res) => {
 
 /** Login Get Route */
 app.get("/login", (req, res) => {
-  if (loginCheckMixin(req, res)) {
+  if (loginCheckMixin(req, res, false)) {
     res.redirect('urls');
+  } else {
+    res.render('login');
   }
 });
 
@@ -110,7 +111,7 @@ app.post("/login", (req, res) => {
     return;
   }
   req.session.userId = user[0];
-  res.redirect('/urls');
+  res.redirect('urls');
 });
 
 /** Logout Route */
@@ -121,10 +122,14 @@ app.post("/logout", (req, res) => {
 
 /** Register Form Get */
 app.get("/register", (req, res) => {
-  const templateVars = {
-    user: db.users.get(req.session.userId)
-  };
-  res.render('register', templateVars);
+  if (!loginCheckMixin(req, res, false)) {
+    const templateVars = {
+      user: db.users.get(req.session.userId)
+    };
+    res.render('register', templateVars);
+  } else {
+    res.redirect('urls');
+  }
 });
 
 /** Register Form Post */
