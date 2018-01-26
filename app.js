@@ -19,6 +19,7 @@ const db = require("./data-model");
 const SALT_ROUNDS = 10;
 
 const app = express();
+app.use(express.static(__dirname + '/static'));
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieSession({
