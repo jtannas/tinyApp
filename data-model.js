@@ -82,11 +82,11 @@ exports.urls = dbTableMethods(database.urls);
 database.users = {
   "qwerty": {
     email: "user@example.com",
-    password: "purple-monkey-dinosaur"
+    password: '$2a$10$cg96oq5jizqplo1RxyNgw.b.UveKHVQulo6FOEqfHFeWsQHPisTRm'
   },
   "asdfgh": {
     email: "user2@example.com",
-    password: "dishwasher-funk"
+    password: '$2a$10$ZXzlWUtn1eYToH/EHQfL0eN1UU/kMYW65x0/paR5dkTeQ28FHzT/m'
   }
 };
 
