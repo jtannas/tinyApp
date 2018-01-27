@@ -13,48 +13,62 @@
     <%- include ./partials/_header %>
   </header>
 
-  <% for (key in urls) {%>
-    <form>
+  <form>
 
-        <h2>
-          Shortcut <a href="/u/<%= key %>">tinyApp.ca/u/<%= key %></a>
-        </h2>
+      <h2>
+        Shortcut <a href="/u/<%= key %>">tinyApp.ca/u/<%= key %></a>
+      </h2>
 
-        <div class="form-group">
-          <fieldset disabled="">
-            <label for="dateCreated" class="control-label">Date Created</label>
-            <input name= "dateCreated" class="form-control" type="text" value="<%= (new Date(urls[key].dateCreated)).toLocaleDateString() %>">
-            <label for="visits" class="control-label">Visits</label>
-            <input name= "visits" class="form-control" type="text" value="<%= urls[key].visitors.length.toLocaleString() %>">
-            <label for="visitors" class="control-label">Visitors</label>
-            <input name= "visitors" class="form-control" type="text" value="<%= (new Set(urls[key].visitors.map(record => record.visitorId))).size.toLocaleString() %>">
-          </fieldset>
-        </div>
-
-        <hr>
-
-        <div class="form-group">
-          <label for="longUrl">
-            Full URL
-          </label>
-          <input type="text" name="longUrl" value="<%= urls[key].longUrl %>" class="form-control" size="40">
-          <button class="btn btn-info" type="submit" formmethod="POST" formaction="/urls/<%= key %>?_method=PATCH">
-            Update
-          </button>
-        </div>
-
-    </form>
-
-    <form action="/urls/<%= key %>/?_method=DELETE" method="POST">
       <div class="form-group">
-        <button class="btn btn-danger" type="submit">
-          Delete
+        <fieldset disabled="">
+          <label for="dateCreated" class="control-label">Date Created</label>
+          <input name= "dateCreated" class="form-control" type="text" value="<%= (new Date(url.dateCreated)).toLocaleDateString() %>">
+          <label for="visits" class="control-label">Visits</label>
+          <input name= "visits" class="form-control" type="text" value="<%= url.visitors.length.toLocaleString() %>">
+          <label for="visitors" class="control-label">Visitors</label>
+          <input name= "visitors" class="form-control" type="text" value="<%= (new Set(url.visitors.map(record => record.visitorId))).size.toLocaleString() %>">
+        </fieldset>
+      </div>
+
+      <hr>
+
+      <div class="form-group">
+        <label for="longUrl">
+          Full URL
+        </label>
+        <input type="text" name="longUrl" value="<%= url.longUrl %>" class="form-control" size="40">
+        <button class="btn btn-info" type="submit" formmethod="POST" formaction="/urls/<%= key %>?_method=PATCH">
+          Update
         </button>
       </div>
-    </form>
 
-    <hr>
-  <%}%>
+  </form>
+
+  <form action="/urls/<%= key %>/?_method=DELETE" method="POST">
+    <div class="form-group">
+      <button class="btn btn-danger" type="submit">
+        Delete
+      </button>
+    </div>
+  </form>
+
+  <hr>
+
+  <h2>Visitor Log</h2>
+  <table class="table table-hover">
+
+    <thead>
+      <tr>
+        <th>Visitor ID</th>
+        <th>Date Visited</th>
+      </tr>
+    </thead>
+  <% for (visitor of url.visitors) {%>
+    <tr>
+      <td><%= visitor.id %></td>
+      <td><%= (new Date(visitor.timestamp)).toLocaleString() %></td>
+    </tr>
+  <% } %>
 
 </body>
 </html>
