@@ -13,7 +13,6 @@ const cookieSession = require('cookie-session');
 const validator = require('validator');
 const bcrypt = require('bcrypt');
 const methodOverride = require('method-override');
-// const moment = require('moment');
 
 const db = require("./data-model");
 
@@ -207,9 +206,8 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:shortUrl", (req, res) => {
   if (urlAuthCheckMixin(req, res, req.params.shortUrl)) {
     const templateVars = {
-      urls: {
-        [req.params.shortUrl]: db.urls.get(req.params.shortUrl)
-      },
+      key: req.params.shortUrl,
+      url: db.urls.get(req.params.shortUrl),
       user: db.users.get(req.session.userId)
     };
     res.render("urls_show", templateVars);
@@ -236,10 +234,14 @@ app.delete("/urls/:shortUrl", (req, res) => {
 app.get("/u/:shortUrl", (req, res) => {
   const urlRecord = db.urls.get(req.params.shortUrl);
   if (urlRecord) {
-    const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-    const visitTime = Date.now();
-    req.session.visitorId = (req.session.visitorId || `${ip}_${visitTime}`);
-    urlRecord.visitors.push({ visitorId: req.session.visitorId, ip, visitTime });
+    if (req.session.id) {
+      req.session.visitorId = req.session.id;
+    } else if (!req.session.visitorId) {
+      const ip = bcrypt.hash(req.headers['x-forwarded-for'] || req.connection.remoteAddress);
+      const visitTime = Date.now();
+      req.session.visitorId = (bcrypt.hashSync(visitTime.toString(), BCRYPT_SALT_ROUNDS)).slice(30, 45);
+    }
+    urlRecord.visitors.push({ id: req.session.visitorId, timestamp: Date.now() });
     db.urls.update(req.params.shortUrl, urlRecord);
     res.redirect((urlRecord.longUrl.startsWith('http') ? '' : '//') + urlRecord.longUrl);
   } else {
