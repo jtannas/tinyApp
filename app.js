@@ -246,3 +246,5 @@ app.get("/u/:shortUrl", (req, res) => {
     res.status(404).send('URL not found');
   }
 });
+
+app.get('*', (req, res) => res.status(404).send('404: Page Not Found'));
