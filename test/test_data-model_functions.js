@@ -359,7 +359,6 @@ describe('dbTableMethods delete function', function() {
   });
 });
 
-
 describe('dbTableMethods update function', function() {
 
   const dbTableMethods = app.__get__('dbTableMethods');
