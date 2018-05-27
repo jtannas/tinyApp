@@ -52,7 +52,6 @@ describe('Random URL Char Generator', function() {
   });
 });
 
-
 describe('Random URL Safe String Generator', function() {
   const getRandomString = app.__get__('getRandomString');
   let revert;
